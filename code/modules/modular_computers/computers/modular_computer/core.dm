@@ -6,13 +6,14 @@
 	if(damage > broken_damage)
 		shutdown_computer()
 		return 0
-
+	/* Временно убрал проверку из-за спама в чате
 	if(active_program && active_program.requires_ntnet && !get_ntnet_status(active_program.requires_ntnet_feature)) // Active program requires SCiPnet to run but we've just lost connection. Crash.
 		active_program.event_networkfailure(0)
 
 	for(var/datum/computer_file/program/P in idle_threads)
 		if(P.requires_ntnet && !get_ntnet_status(P.requires_ntnet_feature))
 			P.event_networkfailure(1)
+	*/
 
 	if(active_program)
 		if(active_program.program_state != PROGRAM_STATE_KILLED)
