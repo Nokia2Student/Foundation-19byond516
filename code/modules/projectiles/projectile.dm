@@ -242,6 +242,13 @@
 				playsound(target_mob.loc, pick(miss_sounds), 60, 1)
 		return FALSE
 
+	if(result == PROJECTILE_NO_DAMAGE)
+		if(!silenced)
+			target_mob.visible_message(SPAN_NOTICE("\The [src] vaporizes in flames before hitting [target_mob]!"))
+			if(LAZYLEN(miss_sounds))
+				playsound(target_mob.loc, pick(miss_sounds), 60, 1)
+		return FALSE
+
 	//hit messages
 	if(silenced)
 		to_chat(target_mob, SPAN_DANGER("You've been hit in the [parse_zone(def_zone)] by \the [src]!"))
