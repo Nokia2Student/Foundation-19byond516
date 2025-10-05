@@ -183,3 +183,9 @@
 /mob/living/simple_animal/hostile/scp457/do_attack(atom/A, turf/T)
 	if(..())
 		UnarmedAttack(A)
+
+/mob/living/simple_animal/hostile/scp457/bullet_act(obj/item/projectile/Proj)
+	if(status_flags & GODMODE)
+		return PROJECTILE_FORCE_MISS
+	else
+		return PROJECTILE_NO_DAMAGE
