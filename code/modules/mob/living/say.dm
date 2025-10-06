@@ -156,6 +156,18 @@ var/list/channel_to_radio_key = new
 
 	return html_encode(message)
 
+/mob/living/proc/bogatyr_say_messsage(message=null)
+	if(!message)
+		return
+	
+	message = html_decode(message)
+
+	for(var/k in GLOB.special_words)
+		if(findtext(lowertext(message), k))
+			message = replacetext(message, k, GLOB.special_words[k])
+
+	return html_encode(message)
+
 /mob/living/say(message, datum/language/speaking = null, verb="says", alt_name="", whispering)
 	if(client)
 		if(client.prefs.muted & MUTE_IC)
@@ -219,6 +231,7 @@ var/list/channel_to_radio_key = new
 	message = handle_autohiss(message, speaking)
 	message = format_say_message(message)
 	message = process_chat_markup(message)
+	message = bogatyr_say_messsage(message)
 
 	//TODO: move hardcoded checks to this signal
 	SEND_SIGNAL(src, COMSIG_LIVING_TREAT_MESSAGE, args, speaking)
