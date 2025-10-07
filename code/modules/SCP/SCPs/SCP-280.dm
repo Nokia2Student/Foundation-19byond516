@@ -14,8 +14,11 @@
 	response_harm = "tries to punch"
 
 	can_escape = TRUE //snip snip
+
 	pass_flags = PASS_FLAG_TABLE
 	density = FALSE
+
+	mob_size = MOB_LARGE // Can't be pulled by human
 
 	meat_type = null
 	meat_amount = 0
@@ -43,8 +46,12 @@
 		src, // Ref to actual SCP atom
 		"dark mass", //Name (Should not be the scp desg, more like what it can be described as to viewers)
 		SCP_KETER, //Obj Class
-		"280" //Numerical Designation
+		"280", //Numerical Designation
+		SCP_PLAYABLE // [SCP 280 can be played by player]
 	)
+
+	SCP.min_time = 1 MINUTES
+	SCP.min_playercount = 0
 
 //AI stuff
 
@@ -111,13 +118,22 @@
 		return
 	var/lumcount = our_turf.get_lumcount()
 	if(!is_dark(our_turf))
-		adjustBruteLoss(10 * lumcount)
+		adjustBruteLoss(30 * lumcount) // DAMAGE CHANGED 10 -> 30
+		movement_cooldown = 7 // The light slows down
+
 		if((world.time - damage_message_cooldown) > 2 SECONDS)
 			visible_message(SPAN_WARNING("[src] is singed by the light!"))
 			damage_message_cooldown = world.time
 		if(!ai_holder.target)
 			ai_holder.set_stance(STANCE_FLEE)
 			return
+	else
+		movement_cooldown = 2 // In the dark it becomes faster
+		if (health < maxHealth)
+			adjustBruteLoss(-10) // Regeneration in the dark
+			if((world.time - damage_message_cooldown) > 2 SECONDS)
+				visible_message(SPAN_WARNING("[src] is being restored!"))
+				damage_message_cooldown = world.time
 
 	if(lumcount >= 0.6)
 		ai_holder.set_stance(STANCE_FLEE)
@@ -166,3 +182,4 @@
 	else
 		forceMove(new_target_turf)
 		health = maxHealth
+
