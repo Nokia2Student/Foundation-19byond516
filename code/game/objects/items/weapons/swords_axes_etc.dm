@@ -40,7 +40,7 @@
 	force = 3
 	attack_ignore_harm_check = 1
 	var/agonyforce = 20 //Adding more pain if harming,less if not equal OR better at cqc AND atlethics(hauling)
-	var/stunforce = 1 //applied if in HvH user is better then target(either cqc+hauling or legs broken)
+	var/stunforce = 1 //applied if in HvH user is dangerous to target(either equal or better cqc+hauling or target's legs broken)
 	var/on = 0
 	var/integrity_hits = 12 //how many hits we can make before steel go "unusable"
 	var/breaked = 0 //for delayed attack_self realisation
@@ -139,7 +139,7 @@
 		affecting = H_target.get_organ(hit_zone)
 	var/abuser =  user ? "" : "by [user]"
 	var/profficient_cqc = FALSE
-	if((user.get_skill_difference(SKILL_COMBAT, target) >= 0) && (user.get_skill_difference(SKILL_HAULING, target) >= 0))
+	if((user.get_skill_difference(SKILL_COMBAT, target) >= 0) & (user.get_skill_difference(SKILL_HAULING, target) >= 0))
 		profficient_cqc = TRUE
 	else
 		agony *= 0.5 //can not release potential
