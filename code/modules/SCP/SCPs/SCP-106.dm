@@ -8,6 +8,8 @@
 	see_in_dark = 7
 	status_flags = NO_ANTAG | SPECIES_FLAG_NO_EMBED | SPECIES_FLAG_NEED_DIRECT_ABSORB
 
+	available_maneuvers = list()
+
 	//Config
 
 	///Our phase cooldown
