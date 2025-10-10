@@ -36,10 +36,12 @@
 
 	natural_weapon = /obj/item/natural_weapon/claws/strongest // Quite a dangerous thing.
 
+	hud_type = /datum/hud/animal_scp280
+
 	//Mechanics
 
 	var/regen_multiply = 1.5
-	var/door_cooldown = 10 SECONDS
+	var/door_cooldown = 5 SECONDS
 	var/door_cooldown_track
 	var/area/spawn_area
 
@@ -144,12 +146,9 @@
 			to_chat(src, SPAN_WARNING("You merge with the surrounding darkness!"))
 			alpha = 100
 
-		movement_cooldown = 2 // In the dark it becomes faster
+		movement_cooldown = 1 // In the dark it becomes faster
 		if (health < maxHealth)
-			adjustBruteLoss(-10) // Regeneration in the dark
-			if((world.time - damage_message_cooldown) > 2 SECONDS)
-				visible_message(SPAN_WARNING("[src] is being restored!"))
-				damage_message_cooldown = world.time
+			adjustBruteLoss(-10 * regen_multiply) // Regeneration in the dark
 
 	if(lumcount >= 0.6)
 		ai_holder.set_stance(STANCE_FLEE)
@@ -190,7 +189,7 @@
 	S.set_up(3,0,T)
 	S.start()
 
-	var/turf/new_target_turf = pick_turf_in_range(src, 100, list(GLOBAL_PROC_REF(isfloor), GLOBAL_PROC_REF(is_dark)))
+	var/turf/new_target_turf = pick_turf_in_range(T, 15, list(GLOBAL_PROC_REF(isfloor), GLOBAL_PROC_REF(is_dark)))
 	if(new_target_turf)
 		forceMove(new_target_turf)
 		health = maxHealth
@@ -222,7 +221,7 @@
 		return
 
 
-	if(!is_dark(get_turf(A)))
+	if(!is_dark(get_turf(A)) && istype(A, /obj/machinery/door/blast))
 		to_chat(src, SPAN_WARNING("The light is shining on this"))
 		return
 
@@ -242,7 +241,7 @@
 
 	if(istype(A, /obj/machinery/door/blast))
 		to_chat(src, SPAN_WARNING("The door is hard to open."))
-		open_time += 20 SECONDS // Such a strong door...
+		open_time += 10 SECONDS // Such a strong door...
 
 	A.visible_message(SPAN_WARNING("\The [src] begins to pry open \the [A]!"))
 	playsound(get_turf(A), 'sounds/machines/airlock_creaking.ogg', 35, 1)
@@ -268,6 +267,7 @@
 	visible_message("\The [src] slices \the [A]'s controls[check ? ", ripping it open!" : ", breaking it!"]")
 
 // Override
+
 /mob/living/simple_animal/hostile/scp280/UnarmedAttack(atom/A, proximity)
 	setClickCooldown(CLICK_CD_ATTACK)
 
@@ -287,6 +287,51 @@
 	else
 		A.attackby(get_natural_weapon(), src)
 
+/mob/living/simple_animal/hostile/handle_regular_hud_updates()
+	update_sight()
+	if (healths)
+		if (stat != 2)
+			switch(health)
+				if(400 to INFINITY)
+					healths.icon_state = "health0"
+				if(350 to 400)
+					healths.icon_state = "health1"
+				if(300 to 350)
+					healths.icon_state = "health2"
+				if(200 to 300)
+					healths.icon_state = "health3"
+				if(100 to 200)
+					healths.icon_state = "health4"
+				if(0 to 100)
+					healths.icon_state = "health5"
+				else
+					healths.icon_state = "health6"
+		else
+			healths.icon_state = "health7"
+
+	if(stat != DEAD)
+		if (machine)
+			if (!(machine.check_eye(src)))
+				reset_view(null)
+		else
+			if(client && !client.adminobs)
+				reset_view(null)
+
+	return 1
+
+/datum/hud/animal_scp280/FinalizeInstantiation(ui_style='icons/mob/screen/white.dmi', ui_color = "#ffffff", ui_alpha = 255)
+	mymob.client.screen = list()
+
+	action_intent = new /atom/movable/screen/intent()
+
+	mymob.healths = new /atom/movable/screen()
+	mymob.healths.icon = ui_style
+	mymob.healths.icon_state = "health0"
+	mymob.healths.SetName("health")
+	mymob.healths.screen_loc = ui_health
+
+	mymob.client.screen |= action_intent
+	mymob.client.screen |= mymob.healths
 
 // Verbs
 
