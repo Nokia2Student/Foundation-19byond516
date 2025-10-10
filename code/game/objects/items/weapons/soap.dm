@@ -49,6 +49,10 @@
 	//So this is a workaround. This also makes more sense from an IC standpoint. ~Carn
 	if(user.client && (target in user.client.screen))
 		to_chat(user, SPAN_NOTICE("You need to take that [target.name] off before cleaning it."))
+	else if(is_type_in_list(target, list(/obj/effect/decal/cleanable/blood/gibs/red/scp173, /obj/effect/decal/cleanable/vomit/scp173, /obj/effect/decal/cleanable/mucus/scp173)))
+		if(do_after(user, 5 SECONDS, target, bonus_percentage = 25))
+			to_chat(user, SPAN_NOTICE("You scrub \the [target.name] out."))
+			qdel(target)
 	else if(istype(target,/obj/effect/decal/cleanable/blood))
 		to_chat(user, SPAN_NOTICE("You scrub \the [target.name] out."))
 		target.clean() //Blood is a cleanable decal, therefore needs to be accounted for before all cleanable decals.
@@ -60,7 +64,12 @@
 		if(!T)
 			return
 		user.visible_message(SPAN_WARNING("[user] starts scrubbing \the [T]."))
-		T.clean(src, user, 80, SPAN_NOTICE("You scrub \the [target.name] clean."))
+		var/obj/effect/decal/cleanable/D = locate(/obj/effect/decal/cleanable, T)
+		if(is_type_in_list(D, list(/obj/effect/decal/cleanable/blood/gibs/red/scp173, /obj/effect/decal/cleanable/vomit/scp173, /obj/effect/decal/cleanable/mucus/scp173)))
+			if(do_after(user, 5 SECONDS, target, bonus_percentage = 25))
+				T.clean(src, user, 80, SPAN_NOTICE("You scrub \the [target.name] clean."))
+		else
+			T.clean(src, user, 80, SPAN_NOTICE("You scrub \the [target.name] clean."))
 	else if(istype(target,/obj/structure/hygiene/sink))
 		to_chat(user, SPAN_NOTICE("You wet \the [src] in the sink."))
 		wet()

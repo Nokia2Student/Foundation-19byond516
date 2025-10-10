@@ -96,6 +96,9 @@
 	. = ..()
 	color = reagents.get_color()
 
+/obj/effect/decal/cleanable/vomit/scp173
+	desc = "Gosh, how unpleasant. You'll really have to scrub hard to get it out."
+
 /obj/effect/decal/cleanable/tomato_smudge
 	name = "tomato smudge"
 	desc = "It's red."

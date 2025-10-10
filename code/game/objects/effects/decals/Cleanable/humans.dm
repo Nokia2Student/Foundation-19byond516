@@ -275,6 +275,12 @@ var/global/list/image/splatter_cache=list()
 	fleshcolor = "#fc1111"
 	basecolor = "#fc1111"
 
+/obj/effect/decal/cleanable/blood/gibs/red/scp173
+	fleshcolor = "#fc1111"
+	basecolor = "#fc1111"
+	desc = "They look bloody and gruesome. You'll really have to scrub hard to get it out."
+
+
 /obj/effect/decal/cleanable/mucus
 	name = "mucus"
 	desc = "Disgusting mucus."
@@ -291,6 +297,9 @@ var/global/list/image/splatter_cache=list()
 
 /obj/effect/decal/cleanable/mucus/proc/set_dry()
 	dry = TRUE
+
+/obj/effect/decal/cleanable/mucus/scp173
+	desc = "Disgusting mucus. You'll really have to scrub hard to get it out."
 
 #undef BLOOD_SIZE_SMALL
 #undef BLOOD_SIZE_MEDIUM

@@ -253,7 +253,8 @@
 	value = 0.7
 
 /datum/reagent/hydroxylsan/touch_obj(obj/O)
-	O.clean()
+	if(!(is_type_in_list(O, list(/obj/effect/decal/cleanable/blood/gibs/red/scp173, /obj/effect/decal/cleanable/vomit/scp173, /obj/effect/decal/cleanable/mucus/scp173))))
+		O.clean()
 
 /datum/reagent/hydroxylsan/touch_turf(turf/T)
 	if(volume >= 1)
@@ -262,7 +263,9 @@
 			S.dirt = 0
 			if(S.wet > 1)
 				S.unwet_floor(FALSE)
-		T.clean()
+		var/obj/effect/decal/cleanable/D = locate(/obj/effect/decal/cleanable, T)
+		if(!(is_type_in_list(D, list(/obj/effect/decal/cleanable/blood/gibs/red/scp173, /obj/effect/decal/cleanable/vomit/scp173, /obj/effect/decal/cleanable/mucus/scp173))))
+			T.clean()
 
 
 		for(var/mob/living/carbon/slime/M in T)
