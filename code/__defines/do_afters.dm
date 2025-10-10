@@ -21,6 +21,7 @@
 #define DO_SHOW_TARGET       (1<<9)
 /// Used to prevent important slowdowns from being reducible
 #define IGNORE_SLOWDOWNS     (1<<10)
+#define DO_IGNORE_TARGET_MOVEMENT (1<<11)
 
 #define DO_BOTH_CAN_MOVE     (DO_USER_CAN_MOVE | DO_TARGET_CAN_MOVE)
 #define DO_BOTH_CAN_TURN     (DO_USER_CAN_TURN | DO_TARGET_CAN_TURN)

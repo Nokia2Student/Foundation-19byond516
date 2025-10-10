@@ -26,7 +26,7 @@
 	/// How much time you have to wait before defecating again
 	var/defecation_cooldown_time = 45 SECONDS
 	/// What kind of objects/effects we spawn on defecation. Also used when checking the area
-	var/list/defecation_types = list(/obj/effect/decal/cleanable/blood/gibs/red, /obj/effect/decal/cleanable/vomit, /obj/effect/decal/cleanable/mucus)
+	var/list/defecation_types = list(/obj/effect/decal/cleanable/blood/gibs/red/scp173, /obj/effect/decal/cleanable/vomit/scp173, /obj/effect/decal/cleanable/mucus/scp173)
 	/// How much defecation we need to breach
 	var/defication_max = 60
 
@@ -112,12 +112,27 @@
 /mob/living/scp173/say(message)
 	return // lol you can't talk
 
+/mob/living/scp173/emote(act, m_type, message)
+	if(IsBeingWatched())
+		return
+	return ..()
+
 /mob/living/scp173/Move(a,b,f)
 	if(IsBeingWatched())
 		return FALSE
 	return ..()
 
 /mob/living/scp173/face_atom(atom/A)
+	if(IsBeingWatched())
+		return FALSE
+	return ..()
+
+/mob/living/scp173/keybind_face_direction(direction)
+	if(IsBeingWatched())
+		return
+	return ..()
+
+/mob/living/scp173/pointed(atom/A as mob|obj|turf in view())
 	if(IsBeingWatched())
 		return FALSE
 	return ..()
@@ -182,11 +197,8 @@
 		var/obj/structure/inflatable/W = A
 		W.deflate(violent=1)
 	if(istype(A, /obj/structure/closet))
-		var/obj/structure/closet/C = A
-		if(C.open())
-			return
-		C.dump_contents()
-		QDEL_NULL(C)
+		OpenCloset(A)
+		return
 	return
 
 /mob/living/scp173/Life()
@@ -331,6 +343,13 @@
 	A.set_broken(TRUE)
 	var/check = A.open(1)
 	src.visible_message("\The [src] slices \the [A]'s controls[check ? ", ripping it open!" : ", breaking it!"]")
+
+/mob/living/scp173/proc/OpenCloset(obj/structure/closet/A)
+	if(A.open())
+		return
+	A.dump_contents()
+	src.visible_message(SPAN_DANGER("\The [src] smashes \the [A]!"))
+	QDEL_NULL(A)
 
 /mob/living/scp173/proc/Defecate()
 	var/feces_amount = CheckFeces()
@@ -567,7 +586,7 @@
 		to_chat(user, SPAN_WARNING("Someone is looking at you!"))
 		return
 	resist_cooldown = world.time + 5 SECONDS
-	if(!do_after(user, 1 SECOND, src, DO_BOTH_CAN_MOVE|DO_DEFAULT, bonus_percentage = 100)) // Some moron suggested putting 173 in a conveyor loop.
+	if(!do_after(user, 1 SECOND, src, DO_BOTH_CAN_MOVE|DO_DEFAULT|DO_IGNORE_TARGET_MOVEMENT, bonus_percentage = 100)) // Some moron suggested putting 173 in a conveyor loop.
 		return
 	if(user.IsBeingWatched())
 		to_chat(user, SPAN_WARNING("Someone is looking at you!"))
@@ -652,6 +671,9 @@
 	playsound(loc, 'sounds/machines/bolts_up.ogg', 50, 1)
 	for(var/mob/living/L in contents)
 		L.forceMove(get_turf(src))
+		if(L.client)
+			L.client.eye = L
+			L.client.perspective = MOB_PERSPECTIVE
 	update_icon()
 	return TRUE
 
